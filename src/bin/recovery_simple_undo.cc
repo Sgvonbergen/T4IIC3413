@@ -29,7 +29,6 @@ uint32_t read_uint32(std::fstream& log_file) {
     return res;
 }
 
-
 int main(int argc, char* argv[]) {
     std::string log_path;
 

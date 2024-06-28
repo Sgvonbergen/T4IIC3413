@@ -5,9 +5,12 @@ third_party/boost_1_81
 .antlr
 
 .DS_Store
-old_p2
-old_p2/*
+
 old_tables
 old_tables/*
+old_p2
+old_p2/*
+old_p3
+old_p3/*
 
 C++.code-workspace

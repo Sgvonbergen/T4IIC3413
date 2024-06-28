@@ -5,7 +5,7 @@
 #include "relational_model/system.h"
 #include "third_party/cli11/CLI11.hpp"
 
-struct UndoLine {
+struct WriteLine {
     LogType log_type;
     uint32_t transaction_id;
     uint32_t table_id;
@@ -175,33 +175,33 @@ int truncate_log(std::string log_path, uint32_t position, std::vector<char*> *li
 // Get pages and rewrite data found in logfile lines of specified transactions
 void undo_after_position(std::vector<char*> *lines, uint32_t end, std::set<uint32_t> *undo_transactions) {
     LogType log_type;
-    UndoLine undo_line;
+    WriteLine write_line;
     for (int i = lines->size() - 1; i >= end; i--) {
         char* line = lines->at(i);
         log_type = static_cast<LogType>(line[0]);
         if (log_type == LogType::WRITE_U) {
-            undo_line.transaction_id = get_uint32(1, line);
+            write_line.transaction_id = get_uint32(1, line);
             // tid in transactions to undo
-            std::set<uint32_t>::iterator it = undo_transactions->find(undo_line.transaction_id);
+            std::set<uint32_t>::iterator it = undo_transactions->find(write_line.transaction_id);
             if (it == undo_transactions->end()) {
                 continue;
             }
             
-            undo_line.log_type = log_type;
-            undo_line.table_id = get_uint32(5, line);
-            undo_line.page_num = get_uint32(9, line);
-            undo_line.offset = get_uint32(13, line);
-            undo_line.len = get_uint32(17, line);
+            write_line.log_type = log_type;
+            write_line.table_id = get_uint32(5, line);
+            write_line.page_num = get_uint32(9, line);
+            write_line.offset = get_uint32(13, line);
+            write_line.len = get_uint32(17, line);
             
             // std::cout << i << ": ";
-            // std::cout << "Undoing Write of transaction: " << undo_line.transaction_id << " on table " << undo_line.table_id << " page " << undo_line.page_num << " offset " << undo_line.offset << " len " << undo_line.len << std::endl;
-            FileId file_id = catalog.get_file_id(undo_line.table_id);
-            Page& page = buffer_mgr.get_page(file_id, undo_line.page_num);
+            // std::cout << "Undoing Write of transaction: " << write_line.transaction_id << " on table " << write_line.table_id << " page " << write_line.page_num << " offset " << write_line.offset << " len " << write_line.len << std::endl;
+            FileId file_id = catalog.get_file_id(write_line.table_id);
+            Page& page = buffer_mgr.get_page(file_id, write_line.page_num);
             page.make_dirty();
             // Write old data
-            char* start = page.data() + undo_line.offset;
+            char* start = page.data() + write_line.offset;
             char* data = line + 21;
-            for (uint32_t j = 0; j < undo_line.len; j++) {
+            for (uint32_t j = 0; j < write_line.len; j++) {
                 start[j] = data[j];
             }
             // std::cout << "Data Overwritten Successfully" << std::endl;
