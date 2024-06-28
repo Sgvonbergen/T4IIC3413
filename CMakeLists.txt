@@ -58,6 +58,7 @@ set(BUILD_TARGETS
     recovery_real_undo
     recovery_simple_undo
     recovery_undo_redo
+    break_page
 )
 
 set(TEST_TARGETS

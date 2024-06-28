@@ -4,4 +4,10 @@ build
 third_party/boost_1_81
 .antlr
 
-DS_Store
+.DS_Store
+old_p2
+old_p2/*
+old_tables
+old_tables/*
+
+C++.code-workspace

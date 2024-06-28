@@ -46,9 +46,10 @@ int main(int argc, char* argv[]) {
     char* buffer = new char[Page::SIZE];
 
     log_file.read(buffer, 1);
+    int i = 0;
     while (log_file.good()) {
-        std::cout << "<";
-
+        std::cout << i << ": <";
+        i++;
         LogType log_type = static_cast<LogType>(buffer[0]);
         switch (log_type) {
         case LogType::START: {
